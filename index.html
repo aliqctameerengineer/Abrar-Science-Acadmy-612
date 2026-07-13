@@ -78,6 +78,47 @@
             border-radius: 4px;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-info i {
+            font-size: 1.1rem;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
         .nav-tabs .nav-link {
             font-weight: 600;
             color: var(--primary);
@@ -470,6 +511,16 @@
             .app-header h1 {
                 font-size: 1.2rem;
             }
+            .app-header {
+                padding: 12px 16px;
+            }
+            .header-right {
+                gap: 8px;
+            }
+            .user-info, .logout-btn {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
             .filter-row {
                 flex-direction: column;
                 align-items: stretch;
@@ -527,6 +578,14 @@
         .subject-list-popover {
             max-width: 300px;
         }
+
+        .logout-modal {
+            backdrop-filter: blur(3px);
+        }
+
+        .logout-confirm-modal {
+            border-radius: 16px;
+        }
     </style>
 </head>
 <body>
@@ -536,9 +595,16 @@
         <div>
             <h1><i class="bi bi-mortarboard-fill"></i> <span class="school-name-edit" id="schoolNameDisplay" contenteditable="true">Pakistan Islamic School</span> <span class="subtitle">Management System</span></h1>
         </div>
-        <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <div class="header-right">
             <span class="badge bg-light text-dark px-3 py-2"><i class="bi bi-calendar3"></i> <span id="currentDate"></span></span>
             <span class="badge bg-accent text-dark px-3 py-2"><i class="bi bi-people-fill"></i> <span id="totalStudentsBadge">0</span> Students</span>
+            <div class="user-info">
+                <i class="bi bi-person-circle"></i>
+                <span id="adminUsername">Admin</span>
+            </div>
+            <button class="logout-btn" onclick="confirmLogout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
         </div>
     </header>
 
@@ -576,7 +642,7 @@
         <!-- ===== TAB CONTENT ===== -->
         <div class="tab-content">
 
-            <!-- ──────────────────────────── DASHBOARD ──────────────────────────── -->
+            <!-- ──────────────────────────── DASHBOARD ────────────────────────────── -->
             <div class="tab-pane fade show active" id="tabDashboard">
                 <div class="row g-4">
 
@@ -660,7 +726,7 @@
                 </div>
             </div>
 
-            <!-- ──────────────────────────── STUDENTS ──────────────────────────── -->
+            <!-- ──────────────────────────── STUDENTS ────────────────────────────── -->
             <div class="tab-pane fade" id="tabStudents">
                 <div class="card">
                     <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
@@ -698,7 +764,7 @@
                 </div>
             </div>
 
-            <!-- ──────────────────────────── TEACHERS ──────────────────────────── -->
+            <!-- ──────────────────────────── TEACHERS ────────────────────────────── -->
             <div class="tab-pane fade" id="tabTeachers">
                 <div class="card">
                     <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
@@ -821,7 +887,7 @@
                 <div class="card">
                     <div class="card-header"><i class="bi bi-gear"></i> Subject Configuration – Add / Remove Subjects (Class-wise)</div>
                     <div class="card-body">
-                        <p class="text-muted">Manage subjects for each stream. Changes apply to all result entries. <strong>Class-wise:</strong> Prep to 8th use "General", 9th-10th use "Science" or "Arts".</p>
+                        <p class="text-muted">Manage subjects for each stream. Changes apply to all result entries. <strong>Class-wise:</strong> Prep to 8th use "General", 9th-10th use "Science" / "Arts".</p>
                         <div class="row g-4">
                             <div class="col-md-4">
                                 <div class="card border p-3">
@@ -939,6 +1005,29 @@
     <!-- end container -->
 
 
+    <!-- ==================== LOGOUT CONFIRMATION MODAL ==================== -->
+    <div class="modal fade logout-modal" id="logoutModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content logout-confirm-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-question-circle"></i> Confirm Logout</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0"><strong>Are you sure you want to logout?</strong></p>
+                    <p class="text-muted small mt-2">You will need to login again to access the dashboard.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="performLogout()">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- ==================== MODALS ==================== -->
 
     <!-- ─── STUDENT MODAL ─── -->
@@ -998,32 +1087,22 @@
                                 <textarea class="form-control" id="sAddress" rows="2"></textarea>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Enrollment Date</label>
-                                <input class="form-control" id="sEnrollDate" type="date" />
+                                <label class="form-label">Admission Date</label>
+                                <input class="form-control" id="sAdmissionDate" type="date" />
                             </div>
                             <div class="col-md-3">
+                                <label class="form-label">Monthly Fee (PKR)</label>
+                                <input class="form-control" id="sMonthlyFee" type="number" />
+                            </div>
+                            <div class="col-12">
                                 <label class="form-label">Photo</label>
                                 <input class="form-control" id="sPhoto" type="file" accept="image/*" />
-                                <div id="sPhotoPreview" class="mt-1"></div>
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Initial Fee Status</label>
-                                <select class="form-select" id="sFeeStatus">
-                                    <option value="Unpaid">Unpaid</option>
-                                    <option value="Paid">Paid</option>
-                                    <option value="Partial">Partial</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Fee Amount (PKR)</label>
-                                <input class="form-control" id="sFeeAmount" type="number" value="0" min="0" />
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary-custom w-100"><i class="bi bi-check-circle"></i> Save Student</button>
                             </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary-custom" onclick="saveStudent()"><i class="bi bi-save"></i> Save Student</button>
                 </div>
             </div>
         </div>
@@ -1034,81 +1113,109 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-person-plus"></i> Add Teacher</h5>
+                    <h5 class="modal-title"><i class="bi bi-person-plus"></i> Add / Edit Teacher</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="teacherForm">
+                        <input type="hidden" id="teacherEditId" />
                         <div class="row g-3">
-                            <div class="col-md-4"><label class="form-label">Full Name *</label><input class="form-control" id="tName" required /></div>
-                            <div class="col-md-4"><label class="form-label">Subject *</label><input class="form-control" id="tSubject" required /></div>
-                            <div class="col-md-4"><label class="form-label">Class *</label><select class="form-select" id="tClass"><option>Prep</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
-                            <div class="col-md-4"><label class="form-label">Phone *</label><input class="form-control" id="tPhone" required /></div>
-                            <div class="col-md-4"><label class="form-label">Email</label><input class="form-control" id="tEmail" type="email" /></div>
-                            <div class="col-md-4"><label class="form-label">Photo</label><input class="form-control" id="tPhoto" type="file" accept="image/*" />
-                                <div id="tPhotoPreview" class="mt-1"></div>
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name *</label>
+                                <input class="form-control" id="tName" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Subject *</label>
+                                <input class="form-control" id="tSubject" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Class</label>
+                                <select class="form-select" id="tClass">
+                                    <option value="">Select</option>
+                                    <option>Prep</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Phone *</label>
+                                <input class="form-control" id="tPhone" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Email</label>
+                                <input class="form-control" id="tEmail" type="email" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" id="tAddress" rows="2"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Photo</label>
+                                <input class="form-control" id="tPhoto" type="file" accept="image/*" />
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary-custom w-100"><i class="bi bi-check-circle"></i> Save Teacher</button>
                             </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary-custom" onclick="saveTeacher()"><i class="bi bi-save"></i> Save Teacher</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ─── RESULT MODAL (Dynamic Subjects) ─── -->
+    <!-- ─── RESULT MODAL ─── -->
     <div class="modal fade" id="resultModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-bar-chart"></i> Add Result – Dynamic Subjects</h5>
+                    <h5 class="modal-title"><i class="bi bi-bar-chart"></i> Add / Edit Result</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="resultForm">
                         <input type="hidden" id="resultEditId" />
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="form-label">Student ID *</label>
-                                <input class="form-control" id="rStudentId" required placeholder="e.g. STU001" />
+                                <input class="form-control" id="rStudentId" required />
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="form-label">Student Name *</label>
-                                <input class="form-control" id="rName" required />
+                                <input class="form-control" id="rStudentName" required />
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <label class="form-label">Class *</label>
-                                <select class="form-select" id="rClass" required onchange="updateResultSubjects()">
+                                <select class="form-select" id="rClass" required>
+                                    <option value="">Select</option>
                                     <option>Prep</option><option>1</option><option>2</option><option>3</option><option>4</option>
                                     <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Stream</label>
-                                <select class="form-select" id="rStream" onchange="updateResultSubjects()">
+                            <div class="col-md-4">
+                                <label class="form-label">Stream *</label>
+                                <select class="form-select" id="rStream" required>
                                     <option value="General">General</option>
                                     <option value="Science">Science</option>
                                     <option value="Arts">Arts</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Term</label>
-                                <select class="form-select" id="rTerm">
-                                    <option>Term 1</option><option>Term 2</option><option>Final</option>
+                            <div class="col-md-4">
+                                <label class="form-label">Term *</label>
+                                <select class="form-select" id="rTerm" required>
+                                    <option value="">Select</option>
+                                    <option value="Term 1">Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                    <option value="Final">Final</option>
                                 </select>
                             </div>
+                            <div class="col-12">
+                                <label class="form-label">Marks (Subject-wise) *</label>
+                                <div id="marksContainer"></div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary-custom w-100"><i class="bi bi-check-circle"></i> Save Result</button>
+                            </div>
                         </div>
-                        <hr class="my-2" />
-                        <div class="fw-bold mb-2">Subjects (editable via "Subjects" tab) <span class="text-muted small">Max marks: 100 each</span></div>
-                        <div id="dynamicSubjectsContainer" class="row g-2"></div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary-custom" onclick="saveResult()"><i class="bi bi-save"></i> Save Result</button>
                 </div>
             </div>
         </div>
@@ -1119,49 +1226,54 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-cash"></i> Record Fee (PKR)</h5>
+                    <h5 class="modal-title"><i class="bi bi-cash-coin"></i> Record Fee (PKR)</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="feeForm">
                         <input type="hidden" id="feeEditId" />
-                        <div class="mb-3">
-                            <label class="form-label">Student ID *</label>
-                            <input class="form-control" id="fStudentId" required placeholder="STU001" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Student Name *</label>
-                            <input class="form-control" id="fName" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Class</label>
-                            <select class="form-select" id="fClass"><option>Prep</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Amount (PKR) *</label>
-                            <input class="form-control" id="fAmount" type="number" min="0" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" id="fStatus">
-                                <option value="Paid">Paid</option>
-                                <option value="Unpaid">Unpaid</option>
-                                <option value="Partial">Partial</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Date</label>
-                            <input class="form-control" id="fDate" type="date" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Payment Method</label>
-                            <input class="form-control" id="fMethod" placeholder="Cash / UPI / Bank" />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Student ID *</label>
+                                <input class="form-control" id="fStudentId" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Student Name *</label>
+                                <input class="form-control" id="fStudentName" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Class *</label>
+                                <select class="form-select" id="fClass" required>
+                                    <option value="">Select</option>
+                                    <option>Prep</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date *</label>
+                                <input class="form-control" id="fDate" type="date" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Amount (PKR) *</label>
+                                <input class="form-control" id="fAmount" type="number" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status *</label>
+                                <select class="form-select" id="fStatus" required>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Partial">Partial</option>
+                                    <option value="Unpaid">Unpaid</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Remarks</label>
+                                <textarea class="form-control" id="fRemarks" rows="2"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary-custom w-100"><i class="bi bi-check-circle"></i> Record Fee</button>
+                            </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary-custom" onclick="saveFee()"><i class="bi bi-save"></i> Save Fee Record</button>
                 </div>
             </div>
         </div>
@@ -1177,1459 +1289,358 @@
                 </div>
                 <div class="modal-body">
                     <form id="certificateForm">
-                        <div class="mb-3">
-                            <label class="form-label">Student ID *</label>
-                            <input class="form-control" id="cStudentId" placeholder="STU001" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Student Name *</label>
-                            <input class="form-control" id="cName" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Class *</label>
-                            <select class="form-select" id="cClass">
-                                <option>Prep</option><option>1</option><option>2</option><option>3</option><option>4</option>
-                                <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Certificate Type</label>
-                            <select class="form-select" id="cType">
-                                <option>Transfer Certificate</option>
-                                <option>Character Certificate</option>
-                                <option>Bonafide Certificate</option>
-                                <option>Academic Certificate</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Issue Date</label>
-                            <input class="form-control" id="cDate" type="date" />
+                        <input type="hidden" id="certEditId" />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Student ID *</label>
+                                <input class="form-control" id="cStudentId" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Student Name *</label>
+                                <input class="form-control" id="cStudentName" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Class *</label>
+                                <select class="form-select" id="cClass" required>
+                                    <option value="">Select</option>
+                                    <option>Prep</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date *</label>
+                                <input class="form-control" id="cDate" type="date" required />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Certificate Type *</label>
+                                <select class="form-select" id="cType" required>
+                                    <option value="">Select</option>
+                                    <option value="Completion">Completion</option>
+                                    <option value="Promotion">Promotion</option>
+                                    <option value="Merit">Merit</option>
+                                    <option value="Attendance">Attendance</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Remarks</label>
+                                <textarea class="form-control" id="cRemarks" rows="2"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary-custom w-100"><i class="bi bi-check-circle"></i> Issue Certificate</button>
+                            </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary-custom" onclick="saveCertificate()"><i class="bi bi-save"></i> Issue Certificate</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- ===== TOAST CONTAINER ===== -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
-
-
-    <!-- ==================== JAVASCRIPT ==================== -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
-    </script>
     <script>
-        // ──────────────────────────────────────────────────────────────────────────
-        //  DATABASE (localStorage)
-        // ──────────────────────────────────────────────────────────────────────────
-
-        const DB_KEY = 'pakSchoolMGMT_DB';
-
-        function getDB() {
-            try {
-                const raw = localStorage.getItem(DB_KEY);
-                if (raw) return JSON.parse(raw);
-            } catch (_) {}
-            return {
-                students: [],
-                teachers: [],
-                results: [],
-                fees: [],
-                certificates: [],
-                subjectsConfig: {
-                    General: ['English', 'Urdu', 'Mathematics', 'General Science', 'Social Studies', 'Islamiyat',
-                        'Computer', 'Art & Drawing'
-                    ],
-                    Science: ['English', 'Urdu', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'Pakistan Studies',
-                        'Islamiyat'
-                    ],
-                    Arts: ['English', 'Urdu', 'Mathematics', 'Pakistan Studies', 'Islamiyat', 'General Science',
-                        'Economics', 'Geography'
-                    ]
-                },
-                counters: { student: 0, teacher: 0, result: 0, fee: 0, cert: 0 },
-                schoolName: 'Pakistan Islamic School',
-                preparedBy: 'Eng Ali Hasan'
-            };
+        // ==================== AUTHENTICATION ==================== 
+        function checkLogin() {
+            const adminUser = localStorage.getItem('adminUser');
+            if (!adminUser) {
+                window.location.href = 'login.html';
+            } else {
+                // Display username
+                document.getElementById('adminUsername').textContent = adminUser.charAt(0).toUpperCase() + adminUser.slice(1);
+            }
         }
 
-        function saveDB(db) {
-            localStorage.setItem(DB_KEY, JSON.stringify(db));
+        function confirmLogout() {
+            const logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            logoutModal.show();
         }
 
-        function genID(prefix, counterKey) {
-            const db = getDB();
-            db.counters[counterKey] = (db.counters[counterKey] || 0) + 1;
-            const id = prefix + String(db.counters[counterKey]).padStart(3, '0');
-            saveDB(db);
-            return id;
+        function performLogout() {
+            // Clear session
+            localStorage.removeItem('adminUser');
+            localStorage.removeItem('loginTime');
+            
+            // Show logout message
+            alert('✅ You have been logged out successfully.');
+            
+            // Redirect to login
+            window.location.href = 'login.html';
         }
 
-        // ──────────────────────────────────────────────────────────────────────────
-        //  FORMAT HELPERS
-        // ──────────────────────────────────────────────────────────────────────────
+        // Check if user is logged in when page loads
+        window.addEventListener('load', () => {
+            checkLogin();
+            initializeDashboard();
+        });
 
-        function todayStr() {
-            return new Date().toISOString().slice(0, 10);
+        // ==================== DATA MANAGEMENT ==================== 
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+        let teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+        let results = JSON.parse(localStorage.getItem('results')) || [];
+        let fees = JSON.parse(localStorage.getItem('fees')) || [];
+        let certificates = JSON.parse(localStorage.getItem('certificates')) || [];
+        let subjectConfig = JSON.parse(localStorage.getItem('subjectConfig')) || {
+            General: ['Urdu', 'English', 'Mathematics', 'Science', 'Social Studies', 'Islamic Studies'],
+            Science: ['Urdu', 'English', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'Islamic Studies'],
+            Arts: ['Urdu', 'English', 'Islamic Studies', 'Pakistan Studies', 'Civics', 'Economics']
+        };
+
+        function initializeDashboard() {
+            updateDate();
+            displayRecentStudents();
+            displayTopResults();
+            updateDashboardStats();
+            loadSubjectConfig();
+            attachEventListeners();
         }
 
-        function formatDate(d) {
-            if (!d) return '—';
-            const dt = new Date(d + 'T00:00:00');
-            return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        function updateDate() {
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            const today = new Date();
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-GB', options);
+            document.getElementById('footerYear').textContent = today.getFullYear();
         }
 
-        function getGrade(pct) {
-            if (pct >= 90) return { grade: 'A+', cls: 'grade-A' };
-            if (pct >= 75) return { grade: 'A', cls: 'grade-A' };
-            if (pct >= 60) return { grade: 'B', cls: 'grade-B' };
-            if (pct >= 45) return { grade: 'C', cls: 'grade-C' };
-            if (pct >= 33) return { grade: 'D', cls: 'grade-D' };
-            return { grade: 'F', cls: 'grade-F' };
+        function updateDashboardStats() {
+            document.getElementById('dashStudents').textContent = students.length;
+            document.getElementById('dashTeachers').textContent = teachers.length;
+            document.getElementById('dashCertificates').textContent = certificates.length;
+            
+            let totalFees = fees.reduce((sum, f) => sum + (f.amount || 0), 0);
+            document.getElementById('dashFees').textContent = `PKR ${totalFees.toLocaleString()}`;
+            
+            document.getElementById('totalStudentsBadge').textContent = students.length;
         }
 
-        function calcResult(subjects) {
-            const marks = Object.values(subjects).map(Number);
-            const total = marks.reduce((s, v) => s + v, 0);
-            const max = marks.length * 100;
-            const pct = max ? Math.round((total / max) * 100 * 100) / 100 : 0;
-            const { grade, cls } = getGrade(pct);
-            return { total, pct, grade, cls };
+        function displayRecentStudents() {
+            const tbody = document.getElementById('recentStudentsBody');
+            const recentData = students.slice(-5).reverse();
+            
+            tbody.innerHTML = recentData.map(s => `
+                <tr>
+                    <td>${s.id}</td>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${s.class}</td>
+                    <td><span class="stream-badge stream-${s.stream.toLowerCase()}">${s.stream}</span></td>
+                    <td><span class="badge-${(fees.find(f => f.studentId === s.id)?.status || 'unpaid').toLowerCase()}">${fees.find(f => f.studentId === s.id)?.status || 'Unpaid'}</span></td>
+                </tr>
+            `).join('');
         }
 
-        function feeBadge(status) {
-            const map = { Paid: 'badge-paid', Unpaid: 'badge-unpaid', Partial: 'badge-partial' };
-            return `<span class="${map[status]||'badge-unpaid'}">${status||'Unpaid'}</span>`;
+        function displayTopResults() {
+            const tbody = document.getElementById('topResultsBody');
+            const sortedResults = [...results].sort((a, b) => b.percentage - a.percentage).slice(0, 5);
+            
+            tbody.innerHTML = sortedResults.map(r => `
+                <tr>
+                    <td><strong>${r.studentName}</strong></td>
+                    <td>${r.class}</td>
+                    <td><span class="stream-badge stream-${r.stream.toLowerCase()}">${r.stream}</span></td>
+                    <td><strong>${r.percentage}%</strong></td>
+                    <td><span class="grade-${r.grade}">${r.grade}</span></td>
+                </tr>
+            `).join('');
         }
 
-        function photoHTML(photo, name, size = 'photo-circle') {
-            if (photo) return `<img src="${photo}" class="${size}" alt="photo" />`;
-            const initial = (name && name[0]) || '?';
-            return `<div class="photo-placeholder ${size}">${initial.toUpperCase()}</div>`;
-        }
-
-        function streamBadge(stream) {
-            const cls = stream === 'Science' ? 'stream-science' : stream === 'Arts' ? 'stream-arts' : 'stream-general';
-            return `<span class="stream-badge ${cls}">${stream||'General'}</span>`;
-        }
-
-        function showToast(msg, type = 'success') {
-            const container = document.querySelector('.toast-container');
-            const colors = { success: '#28a745', danger: '#dc3545', warning: '#ffc107', info: '#17a2b8' };
-            const bg = colors[type] || '#28a745';
-            const html = `
-            <div class="toast align-items-center text-white border-0 show" role="alert" style="background:${bg};border-radius:12px;">
-              <div class="d-flex">
-                <div class="toast-body">${msg}</div>
-                <button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-              </div>
-            </div>`;
-            container.insertAdjacentHTML('beforeend', html);
-            setTimeout(() => { const t = container.lastElementChild; if (t) t.remove(); }, 3500);
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  SCHOOL NAME & PREPARED BY (Editable)
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function loadSchoolName() {
-            const db = getDB();
-            const nameEl = document.getElementById('schoolNameDisplay');
-            nameEl.textContent = db.schoolName || 'Pakistan Islamic School';
-            const prepEl = document.getElementById('preparedByName');
-            prepEl.textContent = db.preparedBy || 'Eng Ali Hasan';
-        }
-
-        function saveSchoolName() {
-            const db = getDB();
-            db.schoolName = document.getElementById('schoolNameDisplay').textContent.trim();
-            db.preparedBy = document.getElementById('preparedByName').textContent.trim();
-            saveDB(db);
-            // Update any displayed school name in result cards etc.
-            showToast('School name & prepared by saved!', 'success');
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  SUBJECTS CONFIG
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function getSubjectsForStream(stream) {
-            const db = getDB();
-            return db.subjectsConfig[stream] || [];
-        }
-
-        function renderSubjectsConfig() {
-            const db = getDB();
-            ['General', 'Science', 'Arts'].forEach(stream => {
-                const container = document.getElementById('subjects' + stream);
-                const subjects = db.subjectsConfig[stream] || [];
-                container.innerHTML = subjects.map((sub, idx) =>
-                    `<span class="subject-tag">${sub} <span class="remove-subject" onclick="removeSubject('${stream}', ${idx})">×</span></span>`
-                ).join('') || '<span class="text-muted small">No subjects added.</span>';
-            });
+        function openModal(modalId) {
+            const modal = new bootstrap.Modal(document.getElementById(modalId));
+            modal.show();
         }
 
         function addSubject(stream) {
-            const input = document.getElementById('newSubject' + stream);
-            const val = input.value.trim();
-            if (!val) { showToast('Please enter a subject name', 'warning'); return; }
-            const db = getDB();
-            if (!db.subjectsConfig[stream]) db.subjectsConfig[stream] = [];
-            if (db.subjectsConfig[stream].includes(val)) { showToast('Subject already exists', 'warning');
-                input.value = ''; return; }
-            db.subjectsConfig[stream].push(val);
-            saveDB(db);
-            renderSubjectsConfig();
-            input.value = '';
-            showToast(`Subject "${val}" added to ${stream}`, 'success');
+            const inputId = `newSubject${stream}`;
+            const input = document.getElementById(inputId);
+            const subject = input.value.trim();
+            
+            if (subject) {
+                if (!subjectConfig[stream]) {
+                    subjectConfig[stream] = [];
+                }
+                subjectConfig[stream].push(subject);
+                input.value = '';
+                loadSubjectConfig();
+            }
         }
 
-        function removeSubject(stream, idx) {
-            const db = getDB();
-            if (!db.subjectsConfig[stream]) return;
-            const removed = db.subjectsConfig[stream].splice(idx, 1);
-            saveDB(db);
-            renderSubjectsConfig();
-            showToast(`Subject "${removed}" removed from ${stream}`, 'info');
+        function removeSubject(stream, index) {
+            subjectConfig[stream].splice(index, 1);
+            loadSubjectConfig();
+        }
+
+        function loadSubjectConfig() {
+            ['General', 'Science', 'Arts'].forEach(stream => {
+                const container = document.getElementById(`subjects${stream}`);
+                container.innerHTML = (subjectConfig[stream] || []).map((s, i) => `
+                    <span class="subject-tag">${s} <span class="remove-subject" onclick="removeSubject('${stream}', ${i})">×</span></span>
+                `).join('');
+            });
         }
 
         function saveSubjectConfig() {
-            showToast('Subject configuration saved!', 'success');
+            localStorage.setItem('subjectConfig', JSON.stringify(subjectConfig));
+            alert('✅ Subject configuration saved!');
         }
 
-        // ──────────────────────────────────────────────────────────────────────────
-        //  RENDER ALL
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function renderAll() {
-            const db = getDB();
-            renderStudents(db);
-            renderTeachers(db);
-            renderResults(db);
-            renderFees(db);
-            renderCertificates(db);
-            renderDashboard(db);
-            renderSubjectsConfig();
-            updateCounts(db);
-            loadSchoolName();
-            // Update footer year
-            document.getElementById('footerYear').textContent = new Date().getFullYear();
+        function attachEventListeners() {
+            document.getElementById('studentForm').addEventListener('submit', saveStudent);
+            document.getElementById('teacherForm').addEventListener('submit', saveTeacher);
+            document.getElementById('resultForm').addEventListener('submit', saveResult);
+            document.getElementById('feeForm').addEventListener('submit', saveFee);
+            document.getElementById('certificateForm').addEventListener('submit', saveCertificate);
         }
 
-        function updateCounts(db) {
-            document.getElementById('totalStudentsBadge').textContent = db.students.length;
-            document.getElementById('dashStudents').textContent = db.students.length;
-            document.getElementById('dashTeachers').textContent = db.teachers.length;
-            const totalFees = db.fees.reduce((s, f) => s + (Number(f.amount) || 0), 0);
-            document.getElementById('dashFees').textContent = 'PKR ' + totalFees.toLocaleString();
-            document.getElementById('dashCertificates').textContent = db.certificates.length;
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  DASHBOARD
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function renderDashboard(db) {
-            const recent = [...db.students].reverse().slice(0, 5);
-            const tbody = document.getElementById('recentStudentsBody');
-            tbody.innerHTML = recent.map(s => `
-            <tr>
-              <td>${s.id}</td>
-              <td>${photoHTML(s.photo, s.name, 'photo-circle-sm')} ${s.name}</td>
-              <td>${s.class}</td>
-              <td>${streamBadge(s.stream)}</td>
-              <td>${feeBadge(s.feeStatus)}</td>
-            </tr>`).join('') || '<tr><td colspan="5" class="text-muted">No students yet.</td></tr>';
-
-            const sorted = [...db.results].sort((a, b) => (b._pct || 0) - (a._pct || 0)).slice(0, 5);
-            const tbody2 = document.getElementById('topResultsBody');
-            tbody2.innerHTML = sorted.map(r => {
-                const g = getGrade(r._pct || 0);
-                return `<tr><td>${r.name}</td><td>${r.class}</td><td>${streamBadge(r.stream)}</td><td>${r._pct||0}%</td><td class="${g.cls} fw-bold">${g.grade}</td></tr>`;
-            }).join('') || '<tr><td colspan="5" class="text-muted">No results yet.</td></tr>';
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  STUDENTS
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function renderStudents(db) {
-            const filterId = (document.getElementById('studentFilterId').value || '').trim().toLowerCase();
-            const filterName = (document.getElementById('studentFilterName').value || '').trim().toLowerCase();
-            const filterClass = document.getElementById('studentFilterClass').value;
-            const filterStream = document.getElementById('studentFilterStream').value;
-
-            let list = db.students;
-            if (filterId) list = list.filter(s => s.id.toLowerCase().includes(filterId));
-            if (filterName) list = list.filter(s => s.name.toLowerCase().includes(filterName));
-            if (filterClass) list = list.filter(s => s.class === filterClass);
-            if (filterStream) list = list.filter(s => s.stream === filterStream);
-
-            const tbody = document.getElementById('studentsBody');
-            tbody.innerHTML = list.map(s => {
-                const subjects = getSubjectsForStream(s.stream || 'General');
-                const subjectsStr = subjects.length ? subjects.join(', ') : '—';
-                return `<tr>
-              <td><strong>${s.id}</strong></td>
-              <td>${photoHTML(s.photo, s.name)}</td>
-              <td>${s.name}</td>
-              <td>${s.class}${s.section ? ' '+s.section : ''}</td>
-              <td>${streamBadge(s.stream)}</td>
-              <td><span class="subject-tag" style="font-size:0.75rem;background:#eef;cursor:pointer;" title="${subjectsStr}">${subjects.length} subjects</span></td>
-              <td>${s.father}</td>
-              <td>${s.phone}</td>
-              <td>${feeBadge(s.feeStatus)}</td>
-              <td>
-                <button class="action-btn btn btn-sm btn-outline-primary" onclick="editStudent('${s.id}')" title="Edit"><i class="bi bi-pencil"></i></button>
-                <button class="action-btn btn btn-sm btn-outline-danger" onclick="deleteStudent('${s.id}')" title="Delete"><i class="bi bi-trash"></i></button>
-                <button class="action-btn btn btn-sm btn-outline-info" onclick="viewStudentCard('${s.id}')" title="View Card"><i class="bi bi-eye"></i></button>
-              </td>
-            </tr>`;
-            }).join('') || '<tr><td colspan="10" class="text-center text-muted">No students found.</td></tr>';
-
-            document.getElementById('studentCountInfo').textContent = list.length + ' record(s)';
-        }
-
-        function filterStudents() { renderAll(); }
-
-        function clearStudentFilters() {
-            document.getElementById('studentFilterId').value = '';
-            document.getElementById('studentFilterName').value = '';
-            document.getElementById('studentFilterClass').value = '';
-            document.getElementById('studentFilterStream').value = '';
-            renderAll();
-        }
-
-        function updateStreamOptions() {
-            const cls = document.getElementById('sClass').value;
-            const streamSelect = document.getElementById('sStream');
-            const num = parseInt(cls);
-            if (num >= 9) {
-                streamSelect.innerHTML = `<option value="Science">Science</option><option value="Arts">Arts</option>`;
-            } else {
-                streamSelect.innerHTML = `<option value="General">General</option>`;
-            }
-        }
-
-        function saveStudent() {
-            const id = document.getElementById('studentEditId').value;
-            const name = document.getElementById('sName').value.trim();
-            const cls = document.getElementById('sClass').value;
-            const stream = document.getElementById('sStream').value;
-            const section = document.getElementById('sSection').value.trim();
-            const father = document.getElementById('sFather').value.trim();
-            const mother = document.getElementById('sMother').value.trim();
-            const phone = document.getElementById('sPhone').value.trim();
-            const email = document.getElementById('sEmail').value.trim();
-            const address = document.getElementById('sAddress').value.trim();
-            const enrollDate = document.getElementById('sEnrollDate').value || todayStr();
-            const feeStatus = document.getElementById('sFeeStatus').value;
-            const feeAmount = document.getElementById('sFeeAmount').value || 0;
-
-            if (!name || !cls || !father || !phone) {
-                showToast('Please fill all required fields (*)', 'danger');
-                return;
-            }
-
-            const photoFile = document.getElementById('sPhoto').files[0];
-            const db = getDB();
-
-            const processPhoto = (photoData) => {
-                if (id) {
-                    const idx = db.students.findIndex(s => s.id === id);
-                    if (idx > -1) {
-                        db.students[idx] = { ...db.students[idx], name, class: cls, stream, section, father, mother,
-                            phone, email, address, enrollDate, feeStatus, feeAmount: Number(feeAmount),
-                            photo: photoData || db.students[idx].photo };
-                        saveDB(db);
-                        showToast('Student updated!', 'success');
-                    }
-                } else {
-                    const newId = genID('STU', 'student');
-                    db.students.push({ id: newId, name, class: cls, stream, section, father, mother, phone, email,
-                        address, enrollDate, feeStatus, feeAmount: Number(feeAmount), photo: photoData || '' });
-                    saveDB(db);
-                    showToast(`Student ${newId} added!`, 'success');
-                }
-                renderAll();
-                bootstrap.Modal.getInstance(document.getElementById('studentModal')).hide();
-                document.getElementById('studentForm').reset();
-                document.getElementById('studentEditId').value = '';
-                document.getElementById('sPhotoPreview').innerHTML = '';
+        function saveStudent(e) {
+            e.preventDefault();
+            const id = document.getElementById('studentEditId').value || 'S' + Date.now();
+            const student = {
+                id, name: document.getElementById('sName').value,
+                class: document.getElementById('sClass').value,
+                stream: document.getElementById('sStream').value,
+                section: document.getElementById('sSection').value,
+                father: document.getElementById('sFather').value,
+                mother: document.getElementById('sMother').value,
+                phone: document.getElementById('sPhone').value,
+                email: document.getElementById('sEmail').value,
+                address: document.getElementById('sAddress').value,
+                admissionDate: document.getElementById('sAdmissionDate').value,
+                monthlyFee: document.getElementById('sMonthlyFee').value,
+                photo: document.getElementById('sPhoto').value
             };
-
-            if (photoFile) {
-                const reader = new FileReader();
-                reader.onload = (e) => processPhoto(e.target.result);
-                reader.readAsDataURL(photoFile);
-            } else {
-                processPhoto(null);
-            }
+            
+            const index = students.findIndex(s => s.id === id);
+            if (index > -1) students[index] = student;
+            else students.push(student);
+            
+            localStorage.setItem('students', JSON.stringify(students));
+            bootstrap.Modal.getInstance(document.getElementById('studentModal')).hide();
+            document.getElementById('studentForm').reset();
+            alert('✅ Student saved successfully!');
+            initializeDashboard();
         }
 
-        function editStudent(id) {
-            const db = getDB();
-            const s = db.students.find(x => x.id === id);
-            if (!s) return;
-            document.getElementById('studentEditId').value = s.id;
-            document.getElementById('sName').value = s.name;
-            document.getElementById('sClass').value = s.class;
-            updateStreamOptions();
-            document.getElementById('sStream').value = s.stream || 'General';
-            document.getElementById('sSection').value = s.section || '';
-            document.getElementById('sFather').value = s.father || '';
-            document.getElementById('sMother').value = s.mother || '';
-            document.getElementById('sPhone').value = s.phone || '';
-            document.getElementById('sEmail').value = s.email || '';
-            document.getElementById('sAddress').value = s.address || '';
-            document.getElementById('sEnrollDate').value = s.enrollDate || '';
-            document.getElementById('sFeeStatus').value = s.feeStatus || 'Unpaid';
-            document.getElementById('sFeeAmount').value = s.feeAmount || 0;
-            if (s.photo) {
-                document.getElementById('sPhotoPreview').innerHTML =
-                    `<img src="${s.photo}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;" />`;
-            }
-            openModal('studentModal');
-        }
-
-        function deleteStudent(id) {
-            if (!confirm('Delete student ' + id + '?')) return;
-            const db = getDB();
-            db.students = db.students.filter(s => s.id !== id);
-            saveDB(db);
-            renderAll();
-            showToast('Student deleted.', 'info');
-        }
-
-        function viewStudentCard(id) {
-            const db = getDB();
-            const s = db.students.find(x => x.id === id);
-            if (!s) { showToast('Student not found', 'danger'); return; }
-            const area = document.getElementById('resultCardPreviewArea');
-            const subs = {};
-            const subjects = getSubjectsForStream(s.stream || 'General');
-            subjects.forEach(sub => subs[sub] = 85);
-            area.innerHTML = buildResultCardHTML(s, subs, 'Final', s.photo || '');
-            showToast('📄 Student card preview ready');
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  TEACHERS
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function renderTeachers(db) {
-            const tbody = document.getElementById('teachersBody');
-            tbody.innerHTML = db.teachers.map(t => `
-            <tr>
-              <td>${t.id}</td>
-              <td>${photoHTML(t.photo, t.name)}</td>
-              <td>${t.name}</td>
-              <td>${t.subject}</td>
-              <td>${t.class}</td>
-              <td>${t.phone}</td>
-              <td>
-                <button class="action-btn btn btn-sm btn-outline-danger" onclick="deleteTeacher('${t.id}')" title="Delete"><i class="bi bi-trash"></i></button>
-              </td>
-            </tr>`).join('') || '<tr><td colspan="7" class="text-muted">No teachers.</td></tr>';
-            document.getElementById('teacherCountInfo').textContent = db.teachers.length + ' record(s)';
-        }
-
-        function saveTeacher() {
-            const name = document.getElementById('tName').value.trim();
-            const subject = document.getElementById('tSubject').value.trim();
-            const cls = document.getElementById('tClass').value;
-            const phone = document.getElementById('tPhone').value.trim();
-            const email = document.getElementById('tEmail').value.trim();
-            if (!name || !subject || !phone) { showToast('Please fill required fields', 'danger'); return; }
-
-            const photoFile = document.getElementById('tPhoto').files[0];
-            const db = getDB();
-
-            const process = (photoData) => {
-                const id = genID('TCH', 'teacher');
-                db.teachers.push({ id, name, subject, class: cls, phone, email, photo: photoData || '' });
-                saveDB(db);
-                renderAll();
-                bootstrap.Modal.getInstance(document.getElementById('teacherModal')).hide();
-                document.getElementById('teacherForm').reset();
-                document.getElementById('tPhotoPreview').innerHTML = '';
-                showToast('Teacher added!', 'success');
+        function saveTeacher(e) {
+            e.preventDefault();
+            const id = document.getElementById('teacherEditId').value || 'T' + Date.now();
+            const teacher = {
+                id, name: document.getElementById('tName').value,
+                subject: document.getElementById('tSubject').value,
+                class: document.getElementById('tClass').value,
+                phone: document.getElementById('tPhone').value,
+                email: document.getElementById('tEmail').value,
+                address: document.getElementById('tAddress').value,
+                photo: document.getElementById('tPhoto').value
             };
-
-            if (photoFile) {
-                const r = new FileReader();
-                r.onload = (e) => process(e.target.result);
-                r.readAsDataURL(photoFile);
-            } else { process(null); }
+            
+            const index = teachers.findIndex(t => t.id === id);
+            if (index > -1) teachers[index] = teacher;
+            else teachers.push(teacher);
+            
+            localStorage.setItem('teachers', JSON.stringify(teachers));
+            bootstrap.Modal.getInstance(document.getElementById('teacherModal')).hide();
+            document.getElementById('teacherForm').reset();
+            alert('✅ Teacher saved successfully!');
+            initializeDashboard();
         }
 
-        function deleteTeacher(id) {
-            if (!confirm('Delete teacher?')) return;
-            const db = getDB();
-            db.teachers = db.teachers.filter(t => t.id !== id);
-            saveDB(db);
-            renderAll();
-            showToast('Teacher deleted.', 'info');
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  RESULTS (Dynamic Subjects)
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function updateResultSubjects() {
-            const cls = document.getElementById('rClass').value;
-            let stream = document.getElementById('rStream').value;
-            const num = parseInt(cls);
-            if (num < 9) stream = 'General';
-            document.getElementById('rStream').value = stream;
-
-            const subjects = getSubjectsForStream(stream);
-            const container = document.getElementById('dynamicSubjectsContainer');
-            container.innerHTML = subjects.map(sub => `
-            <div class="col-md-3 col-sm-4">
-              <label class="form-label small">${sub}</label>
-              <input class="form-control form-control-sm subject-mark" data-subject="${sub}" type="number" value="0" min="0" max="100" />
-            </div>`).join('') || '<div class="text-muted">No subjects configured for this stream. Go to "Subjects" tab.</div>';
-        }
-
-        function renderResults(db) {
-            const filterId = (document.getElementById('resultFilterId').value || '').trim().toLowerCase();
-            const filterName = (document.getElementById('resultFilterName').value || '').trim().toLowerCase();
-            const filterClass = document.getElementById('resultFilterClass').value;
-
-            let list = db.results.map(r => {
-                const subjects = r.subjects || {};
-                const { total, pct, grade, cls } = calcResult(subjects);
-                r._total = total;
-                r._pct = pct;
-                r._grade = grade;
-                r._gradeCls = cls;
-                return r;
+        function saveResult(e) {
+            e.preventDefault();
+            const marksInputs = document.querySelectorAll('input[data-subject]');
+            const marks = {};
+            marksInputs.forEach(input => {
+                marks[input.dataset.subject] = input.value;
             });
-
-            if (filterId) list = list.filter(r => r.studentId.toLowerCase().includes(filterId));
-            if (filterName) list = list.filter(r => r.name.toLowerCase().includes(filterName));
-            if (filterClass) list = list.filter(r => r.class === filterClass);
-
-            const tbody = document.getElementById('resultsBody');
-            tbody.innerHTML = list.map(r => `
-            <tr data-result-id="${r.id}" style="cursor:pointer;" onclick="previewResultCard('${r.id}')">
-              <td>${r.studentId}</td>
-              <td>${r.name}</td>
-              <td>${r.class}</td>
-              <td>${streamBadge(r.stream)}</td>
-              <td>${r._total}</td>
-              <td>${r._pct}%</td>
-              <td class="${r._gradeCls} fw-bold">${r._grade}</td>
-              <td>${r.term || '—'}</td>
-              <td>
-                <button class="action-btn btn btn-sm btn-outline-primary" onclick="event.stopPropagation();editResult('${r.id}')" title="Edit"><i class="bi bi-pencil"></i></button>
-                <button class="action-btn btn btn-sm btn-outline-danger" onclick="event.stopPropagation();deleteResult('${r.id}')" title="Delete"><i class="bi bi-trash"></i></button>
-                <button class="action-btn btn btn-sm btn-outline-success" onclick="event.stopPropagation();exportResultPDF('${r.id}')" title="PDF"><i class="bi bi-filetype-pdf"></i></button>
-                <button class="action-btn btn btn-sm btn-success" onclick="event.stopPropagation();shareResultWhatsApp('${r.id}')" title="WhatsApp"><i class="bi bi-whatsapp"></i></button>
-              </td>
-            </tr>`).join('') || '<tr><td colspan="9" class="text-muted">No results.</td></tr>';
-
-            document.getElementById('resultCountInfo').textContent = list.length + ' record(s)';
-        }
-
-        function filterResults() { renderAll(); }
-
-        function clearResultFilters() {
-            document.getElementById('resultFilterId').value = '';
-            document.getElementById('resultFilterName').value = '';
-            document.getElementById('resultFilterClass').value = '';
-            renderAll();
-        }
-
-        function saveResult() {
-            const editId = document.getElementById('resultEditId').value;
-            const studentId = document.getElementById('rStudentId').value.trim();
-            const name = document.getElementById('rName').value.trim();
-            const cls = document.getElementById('rClass').value;
-            const stream = document.getElementById('rStream').value;
-            const term = document.getElementById('rTerm').value;
-
-            const subjectInputs = document.querySelectorAll('.subject-mark');
-            const subjects = {};
-            subjectInputs.forEach(inp => {
-                const sub = inp.dataset.subject;
-                subjects[sub] = Number(inp.value) || 0;
-            });
-
-            if (!studentId || !name) { showToast('Student ID and Name required', 'danger'); return; }
-
-            const db = getDB();
-
-            if (editId) {
-                const idx = db.results.findIndex(r => r.id === editId);
-                if (idx > -1) {
-                    db.results[idx] = { ...db.results[idx], studentId, name, class: cls, stream, term, subjects };
-                    saveDB(db);
-                    showToast('Result updated!', 'success');
-                }
-            } else {
-                const id = genID('RES', 'result');
-                db.results.push({ id, studentId, name, class: cls, stream, term, subjects });
-                saveDB(db);
-                showToast('Result added!', 'success');
-            }
-
-            renderAll();
+            
+            const total = Object.values(marks).reduce((sum, val) => sum + parseInt(val || 0), 0);
+            const percentage = Math.round(total / Object.keys(marks).length);
+            
+            let grade = 'F';
+            if (percentage >= 80) grade = 'A';
+            else if (percentage >= 70) grade = 'B';
+            else if (percentage >= 60) grade = 'C';
+            else if (percentage >= 50) grade = 'D';
+            
+            const id = document.getElementById('resultEditId').value || 'R' + Date.now();
+            const result = {
+                id, studentId: document.getElementById('rStudentId').value,
+                studentName: document.getElementById('rStudentName').value,
+                class: document.getElementById('rClass').value,
+                stream: document.getElementById('rStream').value,
+                term: document.getElementById('rTerm').value,
+                marks, total, percentage, grade
+            };
+            
+            const index = results.findIndex(r => r.id === id);
+            if (index > -1) results[index] = result;
+            else results.push(result);
+            
+            localStorage.setItem('results', JSON.stringify(results));
             bootstrap.Modal.getInstance(document.getElementById('resultModal')).hide();
             document.getElementById('resultForm').reset();
-            document.getElementById('resultEditId').value = '';
+            alert('✅ Result saved successfully!');
+            initializeDashboard();
         }
 
-        function editResult(id) {
-            const db = getDB();
-            const r = db.results.find(x => x.id === id);
-            if (!r) return;
-            document.getElementById('resultEditId').value = r.id;
-            document.getElementById('rStudentId').value = r.studentId;
-            document.getElementById('rName').value = r.name;
-            document.getElementById('rClass').value = r.class;
-            document.getElementById('rStream').value = r.stream || 'General';
-            document.getElementById('rTerm').value = r.term || 'Term 1';
-            updateResultSubjects();
-            // Set marks
-            setTimeout(() => {
-                const inputs = document.querySelectorAll('.subject-mark');
-                inputs.forEach(inp => {
-                    const sub = inp.dataset.subject;
-                    if (r.subjects && r.subjects[sub] !== undefined) {
-                        inp.value = r.subjects[sub];
-                    }
-                });
-            }, 100);
-            openModal('resultModal');
-        }
-
-        function deleteResult(id) {
-            if (!confirm('Delete result?')) return;
-            const db = getDB();
-            db.results = db.results.filter(r => r.id !== id);
-            saveDB(db);
-            renderAll();
-            showToast('Result deleted.', 'info');
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  RESULT CARD PREVIEW
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function previewResultCard(id) {
-            const db = getDB();
-            const r = db.results.find(x => x.id === id);
-            if (!r) return;
-            const subjects = r.subjects || {};
-            const { total, pct, grade, cls } = calcResult(subjects);
-            r._total = total;
-            r._pct = pct;
-            r._grade = grade;
-            r._gradeCls = cls;
-
-            const student = db.students.find(s => s.id === r.studentId);
-            const photo = student ? student.photo : '';
-
-            const area = document.getElementById('resultCardPreviewArea');
-            area.innerHTML = buildResultCardHTML(r, subjects, r.term || 'Final', photo);
-
-            document.querySelectorAll('#resultsBody tr').forEach(tr => tr.classList.remove('vlookup-highlight'));
-            const row = document.querySelector(`#resultsBody tr[data-result-id="${id}"]`);
-            if (row) row.classList.add('vlookup-highlight');
-        }
-
-        function buildResultCardHTML(data, subjects, term, photo) {
-            const subArray = Object.keys(subjects).map(name => ({ name, mark: Number(subjects[name]) || 0 }));
-            const total = subArray.reduce((s, sub) => s + sub.mark, 0);
-            const max = subArray.length * 100;
-            const pct = max ? Math.round((total / max) * 100 * 100) / 100 : 0;
-            const { grade, cls } = getGrade(pct);
-
-            const subjectsRows = subArray.map(sub => `
-            <tr>
-              <td>${sub.name}</td>
-              <td class="text-center">${sub.mark}</td>
-              <td class="text-center">100</td>
-              <td class="text-center">${sub.mark >= 33 ? '✅' : '❌'}</td>
-            </tr>`).join('');
-
-            const schoolName = getDB().schoolName || 'Pakistan Islamic School';
-            const photoHtml = photo ? `<img src="${photo}" alt="photo" />` :
-                `<div class="photo-placeholder" style="width:70px;height:70px;border-radius:50%;margin:0 auto;font-size:2rem;">📷</div>`;
-
-            return `
-            <div class="result-card-preview" id="resultCardForPDF">
-              <div class="school-name">🏫 ${schoolName}</div>
-              <div class="photo-area">${photoHtml}</div>
-              <div class="student-info">
-                <span>Student ID:</span> ${data.studentId || data.id}
-                <span>Name:</span> ${data.name}
-                <span>Class:</span> ${data.class}  <span>Stream:</span> ${data.stream || 'General'}
-                <span>Term:</span> ${term || 'Final'}
-                <span>Date:</span> ${formatDate(todayStr())}
-              </div>
-              <table class="table table-bordered table-sm mt-2">
-                <thead class="table-dark"><tr><th>Subject</th><th>Marks</th><th>Max</th><th>Status</th></tr></thead>
-                <tbody>${subjectsRows}</tbody>
-                <tfoot>
-                  <tr class="fw-bold"><td>Total</td><td>${total}</td><td>${max}</td><td>—</td></tr>
-                  <tr class="fw-bold"><td colspan="2">Percentage</td><td colspan="2">${pct}%</td></tr>
-                  <tr class="fw-bold"><td colspan="2">Grade</td><td colspan="2" class="${cls}" style="font-size:1.2rem;">${grade}</td></tr>
-                </tfoot>
-              </table>
-              <div class="text-center text-muted small mt-2">✍️ Signature: _______________</div>
-              <div class="d-flex gap-2 mt-3 flex-wrap justify-content-center">
-                <button class="btn btn-sm btn-primary-custom" onclick="exportResultPDF('${data.id}')"><i class="bi bi-filetype-pdf"></i> PDF</button>
-                <button class="btn btn-sm btn-success" onclick="shareResultWhatsApp('${data.id}')"><i class="bi bi-whatsapp"></i> WhatsApp</button>
-                <button class="btn btn-sm btn-outline-custom" onclick="copyResultText('${data.id}')"><i class="bi bi-clipboard"></i> Copy</button>
-              </div>
-            </div>`;
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  RESULT PDF EXPORT
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function exportResultPDF(id) {
-            const db = getDB();
-            const r = db.results.find(x => x.id === id);
-            if (!r) return;
-            const subjects = r.subjects || {};
-            const { total, pct, grade } = calcResult(subjects);
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.text('🏫 ' + schoolName, 105, 20, { align: 'center' });
-            doc.setFontSize(14);
-            doc.text('Result Card', 105, 30, { align: 'center' });
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(11);
-            doc.text(`Student ID: ${r.studentId}`, 14, 45);
-            doc.text(`Name: ${r.name}`, 14, 53);
-            doc.text(`Class: ${r.class}  |  Stream: ${r.stream || 'General'}`, 14, 61);
-            doc.text(`Term: ${r.term || 'Final'}`, 14, 69);
-
-            const headers = [
-                ['Subject', 'Marks', 'Max', 'Status']
-            ];
-            const subArray = Object.keys(subjects).map(name => ({ name, mark: Number(subjects[name]) || 0 }));
-            const body = subArray.map(sub => [sub.name, String(sub.mark), '100', sub.mark >= 33 ? '✅' : '❌']);
-            const foot = [
-                ['Total', String(total), String(subArray.length * 100), ''],
-                ['Percentage', pct + '%', '', ''],
-                ['Grade', grade, '', ''],
-            ];
-
-            doc.autoTable({
-                head: headers,
-                body: [...body, ...foot],
-                startY: 78,
-                theme: 'grid',
-                headStyles: { fillColor: [26, 58, 92] },
-                footStyles: { fillColor: [240, 244, 248] },
-                bodyStyles: { fontSize: 10 },
-            });
-
-            doc.text('✍️ Signature: _______________', 14, doc.lastAutoTable.finalY + 20);
-            doc.save(`Result_${r.studentId}_${r.name}.pdf`);
-            showToast('PDF downloaded!', 'success');
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  RESULT WHATSAPP SHARE
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function shareResultWhatsApp(id) {
-            const db = getDB();
-            const r = db.results.find(x => x.id === id);
-            if (!r) return;
-            const subjects = r.subjects || {};
-            const { total, pct, grade } = calcResult(subjects);
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-
-            let msg = `📚 *RESULT CARD* 📚\n`;
-            msg += `🏫 ${schoolName}\n`;
-            msg += `━━━━━━━━━━━━━━━━━━━\n`;
-            msg += `👤 Name: ${r.name}\n`;
-            msg += `🆔 ID: ${r.studentId}\n`;
-            msg += `📖 Class: ${r.class} | Stream: ${r.stream || 'General'} | Term: ${r.term||'Final'}\n`;
-            msg += `━━━━━━━━━━━━━━━━━━━\n`;
-            Object.keys(subjects).forEach(sub => {
-                msg += `📘 ${sub}: ${subjects[sub]}\n`;
-            });
-            msg += `━━━━━━━━━━━━━━━━━━━\n`;
-            msg += `✅ Total: ${total}/${Object.keys(subjects).length*100}  |  📊 ${pct}%\n`;
-            msg += `🏆 Grade: *${grade}*\n`;
-            msg += `━━━━━━━━━━━━━━━━━━━\n`;
-
-            const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-            showToast('WhatsApp opened!', 'info');
-        }
-
-        function copyResultText(id) {
-            const db = getDB();
-            const r = db.results.find(x => x.id === id);
-            if (!r) return;
-            const subjects = r.subjects || {};
-            const { total, pct, grade } = calcResult(subjects);
-            let txt =
-                `📚 RESULT CARD - ${r.name} (${r.studentId}) | Class: ${r.class} | Stream: ${r.stream||'General'} | Term: ${r.term||'Final'} | Total: ${total}/${Object.keys(subjects).length*100} | ${pct}% | Grade: ${grade}`;
-            navigator.clipboard.writeText(txt).then(() => showToast('Copied!', 'success')).catch(() => {});
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  FEES (PKR)
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function renderFees(db) {
-            const filterId = (document.getElementById('feeFilterId').value || '').trim().toLowerCase();
-            const filterName = (document.getElementById('feeFilterName').value || '').trim().toLowerCase();
-            const filterStatus = document.getElementById('feeFilterStatus').value;
-
-            let list = db.fees;
-            if (filterId) list = list.filter(f => f.studentId.toLowerCase().includes(filterId));
-            if (filterName) list = list.filter(f => f.name.toLowerCase().includes(filterName));
-            if (filterStatus) list = list.filter(f => f.status === filterStatus);
-
-            const tbody = document.getElementById('feesBody');
-            tbody.innerHTML = list.map(f => `
-            <tr data-fee-id="${f.id}" style="cursor:pointer;" onclick="previewFeeVoucher('${f.id}')">
-              <td><strong>${f.id}</strong></td>
-              <td>${f.studentId}</td>
-              <td>${f.name}</td>
-              <td>${f.class || '—'}</td>
-              <td>PKR ${Number(f.amount).toLocaleString()}</td>
-              <td>${feeBadge(f.status)}</td>
-              <td>${formatDate(f.date)}</td>
-              <td>
-                <button class="action-btn btn btn-sm btn-outline-primary" onclick="event.stopPropagation();editFee('${f.id}')" title="Edit"><i class="bi bi-pencil"></i></button>
-                <button class="action-btn btn btn-sm btn-outline-danger" onclick="event.stopPropagation();deleteFee('${f.id}')" title="Delete"><i class="bi bi-trash"></i></button>
-                <button class="action-btn btn btn-sm btn-success" onclick="event.stopPropagation();shareFeeWhatsApp('${f.id}')" title="WhatsApp"><i class="bi bi-whatsapp"></i></button>
-              </td>
-            </tr>`).join('') || '<tr><td colspan="8" class="text-muted">No fee records.</td></tr>';
-
-            document.getElementById('feeCountInfo').textContent = list.length + ' record(s)';
-        }
-
-        function filterFees() { renderAll(); }
-
-        function clearFeeFilters() {
-            document.getElementById('feeFilterId').value = '';
-            document.getElementById('feeFilterName').value = '';
-            document.getElementById('feeFilterStatus').value = '';
-            renderAll();
-        }
-
-        function saveFee() {
-            const editId = document.getElementById('feeEditId').value;
-            const studentId = document.getElementById('fStudentId').value.trim();
-            const name = document.getElementById('fName').value.trim();
-            const cls = document.getElementById('fClass').value;
-            const amount = Number(document.getElementById('fAmount').value) || 0;
-            const status = document.getElementById('fStatus').value;
-            const date = document.getElementById('fDate').value || todayStr();
-            const method = document.getElementById('fMethod').value.trim();
-
-            if (!studentId || !name || !amount) { showToast('Student ID, Name & Amount required', 'danger'); return; }
-
-            const db = getDB();
-
-            if (editId) {
-                const idx = db.fees.findIndex(f => f.id === editId);
-                if (idx > -1) {
-                    db.fees[idx] = { ...db.fees[idx], studentId, name, class: cls, amount, status, date, method };
-                    saveDB(db);
-                    showToast('Fee updated!', 'success');
-                }
-            } else {
-                const id = genID('FEE', 'fee');
-                db.fees.push({ id, studentId, name, class: cls, amount, status, date, method });
-                saveDB(db);
-                showToast('Fee recorded!', 'success');
-                const student = db.students.find(s => s.id === studentId);
-                if (student) {
-                    student.feeStatus = status;
-                    student.feeAmount = (student.feeAmount || 0) + amount;
-                    saveDB(db);
-                }
-            }
-
-            renderAll();
+        function saveFee(e) {
+            e.preventDefault();
+            const id = document.getElementById('feeEditId').value || 'V' + Date.now();
+            const fee = {
+                id, studentId: document.getElementById('fStudentId').value,
+                studentName: document.getElementById('fStudentName').value,
+                class: document.getElementById('fClass').value,
+                date: document.getElementById('fDate').value,
+                amount: parseInt(document.getElementById('fAmount').value),
+                status: document.getElementById('fStatus').value,
+                remarks: document.getElementById('fRemarks').value
+            };
+            
+            const index = fees.findIndex(f => f.id === id);
+            if (index > -1) fees[index] = fee;
+            else fees.push(fee);
+            
+            localStorage.setItem('fees', JSON.stringify(fees));
             bootstrap.Modal.getInstance(document.getElementById('feeModal')).hide();
             document.getElementById('feeForm').reset();
-            document.getElementById('feeEditId').value = '';
+            alert('✅ Fee recorded successfully!');
+            initializeDashboard();
         }
 
-        function editFee(id) {
-            const db = getDB();
-            const f = db.fees.find(x => x.id === id);
-            if (!f) return;
-            document.getElementById('feeEditId').value = f.id;
-            document.getElementById('fStudentId').value = f.studentId;
-            document.getElementById('fName').value = f.name;
-            document.getElementById('fClass').value = f.class || 'Prep';
-            document.getElementById('fAmount').value = f.amount;
-            document.getElementById('fStatus').value = f.status || 'Paid';
-            document.getElementById('fDate').value = f.date || todayStr();
-            document.getElementById('fMethod').value = f.method || '';
-            openModal('feeModal');
-        }
-
-        function deleteFee(id) {
-            if (!confirm('Delete fee record?')) return;
-            const db = getDB();
-            db.fees = db.fees.filter(f => f.id !== id);
-            saveDB(db);
-            renderAll();
-            showToast('Fee deleted.', 'info');
-        }
-
-        // ─── FEE VOUCHER PREVIEW ───
-
-        function previewFeeVoucher(id) {
-            const db = getDB();
-            const f = db.fees.find(x => x.id === id);
-            if (!f) return;
-
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-            const area = document.getElementById('feeVoucherPreviewArea');
-            area.innerHTML = `
-            <div class="result-card-preview" style="max-width:500px;">
-              <div style="text-align:center;border-bottom:2px dashed var(--primary);padding-bottom:12px;margin-bottom:16px;">
-                <h4 class="fw-bold" style="color:var(--primary);">🏫 ${schoolName}</h4>
-                <h5 style="color:var(--accent);">Fee Voucher (PKR)</h5>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;font-size:0.95rem;">
-                <span>Voucher #:</span> <strong>${f.id}</strong>
-                <span>Student ID:</span> <strong>${f.studentId}</strong>
-                <span>Name:</span> <strong>${f.name}</strong>
-                <span>Class:</span> <strong>${f.class||'—'}</strong>
-                <span>Amount:</span> <strong style="color:var(--green);">PKR ${Number(f.amount).toLocaleString()}</strong>
-                <span>Status:</span> ${feeBadge(f.status)}
-                <span>Date:</span> <strong>${formatDate(f.date)}</strong>
-                <span>Method:</span> <strong>${f.method||'—'}</strong>
-              </div>
-              <div style="margin-top:16px;padding-top:12px;border-top:2px dashed #ddd;text-align:center;font-size:0.85rem;color:#888;">
-                ✍️ Authorised Signature
-              </div>
-              <div class="d-flex gap-2 mt-3 flex-wrap justify-content-center">
-                <button class="btn btn-sm btn-primary-custom" onclick="exportFeePDF('${f.id}')"><i class="bi bi-filetype-pdf"></i> PDF</button>
-                <button class="btn btn-sm btn-success" onclick="shareFeeWhatsApp('${f.id}')"><i class="bi bi-whatsapp"></i> WhatsApp</button>
-                <button class="btn btn-sm btn-outline-custom" onclick="copyFeeText('${f.id}')"><i class="bi bi-clipboard"></i> Copy</button>
-              </div>
-            </div>`;
-
-            document.querySelectorAll('#feesBody tr').forEach(tr => tr.classList.remove('vlookup-highlight'));
-            const row = document.querySelector(`#feesBody tr[data-fee-id="${id}"]`);
-            if (row) row.classList.add('vlookup-highlight');
-        }
-
-        function exportFeePDF(id) {
-            const db = getDB();
-            const f = db.fees.find(x => x.id === id);
-            if (!f) return;
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.text('🏫 ' + schoolName, 105, 20, { align: 'center' });
-            doc.setFontSize(14);
-            doc.text('Fee Voucher (PKR)', 105, 30, { align: 'center' });
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(11);
-            doc.text(`Voucher #: ${f.id}`, 14, 45);
-            doc.text(`Student ID: ${f.studentId}`, 14, 53);
-            doc.text(`Name: ${f.name}`, 14, 61);
-            doc.text(`Class: ${f.class || '—'}`, 14, 69);
-            doc.text(`Amount: PKR ${Number(f.amount).toLocaleString()}`, 14, 77);
-            doc.text(`Status: ${f.status}`, 14, 85);
-            doc.text(`Date: ${formatDate(f.date)}`, 14, 93);
-            doc.text(`Method: ${f.method || '—'}`, 14, 101);
-            doc.text('✍️ Authorised Signature', 14, 120);
-            doc.save(`FeeVoucher_${f.id}.pdf`);
-            showToast('Fee PDF downloaded!', 'success');
-        }
-
-        function shareFeeWhatsApp(id) {
-            const db = getDB();
-            const f = db.fees.find(x => x.id === id);
-            if (!f) return;
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-            let msg = `🧾 *FEE VOUCHER (PKR)* 🧾\n`;
-            msg += `🏫 ${schoolName}\n`;
-            msg += `━━━━━━━━━━━━━━━━━\n`;
-            msg += `📄 Voucher: ${f.id}\n🆔 Student: ${f.studentId}\n👤 Name: ${f.name}\n📖 Class: ${f.class||'—'}\n💰 Amount: PKR ${Number(f.amount).toLocaleString()}\n📌 Status: ${f.status}\n📅 Date: ${formatDate(f.date)}\n💳 Method: ${f.method||'—'}\n`;
-            msg += `━━━━━━━━━━━━━━━━━\n`;
-            const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-            showToast('WhatsApp opened!', 'info');
-        }
-
-        function copyFeeText(id) {
-            const db = getDB();
-            const f = db.fees.find(x => x.id === id);
-            if (!f) return;
-            const txt =
-                `🧾 Fee Voucher: ${f.id} | Student: ${f.studentId} - ${f.name} | Class: ${f.class||'—'} | Amount: PKR ${Number(f.amount).toLocaleString()} | Status: ${f.status} | Date: ${formatDate(f.date)}`;
-            navigator.clipboard.writeText(txt).then(() => showToast('Copied!', 'success')).catch(() => {});
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  CERTIFICATES
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function renderCertificates(db) {
-            const tbody = document.getElementById('certificatesBody');
-            tbody.innerHTML = db.certificates.map(c => `
-            <tr data-cert-id="${c.id}" style="cursor:pointer;" onclick="previewCertificate('${c.id}')">
-              <td>${c.id}</td>
-              <td>${c.studentId}</td>
-              <td>${c.name}</td>
-              <td>${c.class}</td>
-              <td>${c.type}</td>
-              <td>${formatDate(c.date)}</td>
-              <td>
-                <button class="action-btn btn btn-sm btn-outline-danger" onclick="event.stopPropagation();deleteCertificate('${c.id}')" title="Delete"><i class="bi bi-trash"></i></button>
-                <button class="action-btn btn btn-sm btn-success" onclick="event.stopPropagation();shareCertWhatsApp('${c.id}')" title="WhatsApp"><i class="bi bi-whatsapp"></i></button>
-              </td>
-            </tr>`).join('') || '<tr><td colspan="7" class="text-muted">No certificates.</td></tr>';
-            document.getElementById('certificateCountInfo').textContent = db.certificates.length + ' record(s)';
-        }
-
-        function saveCertificate() {
-            const studentId = document.getElementById('cStudentId').value.trim();
-            const name = document.getElementById('cName').value.trim();
-            const cls = document.getElementById('cClass').value;
-            const type = document.getElementById('cType').value;
-            const date = document.getElementById('cDate').value || todayStr();
-
-            if (!studentId || !name) { showToast('Student ID and Name required', 'danger'); return; }
-
-            const db = getDB();
-            const id = genID('CERT', 'cert');
-            db.certificates.push({ id, studentId, name, class: cls, type, date });
-            saveDB(db);
-            renderAll();
+        function saveCertificate(e) {
+            e.preventDefault();
+            const id = document.getElementById('certEditId').value || 'C' + Date.now();
+            const certificate = {
+                id, studentId: document.getElementById('cStudentId').value,
+                studentName: document.getElementById('cStudentName').value,
+                class: document.getElementById('cClass').value,
+                date: document.getElementById('cDate').value,
+                type: document.getElementById('cType').value,
+                remarks: document.getElementById('cRemarks').value
+            };
+            
+            const index = certificates.findIndex(c => c.id === id);
+            if (index > -1) certificates[index] = certificate;
+            else certificates.push(certificate);
+            
+            localStorage.setItem('certificates', JSON.stringify(certificates));
             bootstrap.Modal.getInstance(document.getElementById('certificateModal')).hide();
             document.getElementById('certificateForm').reset();
-            showToast('Certificate issued!', 'success');
+            alert('✅ Certificate issued successfully!');
+            initializeDashboard();
         }
 
-        function deleteCertificate(id) {
-            if (!confirm('Delete certificate?')) return;
-            const db = getDB();
-            db.certificates = db.certificates.filter(c => c.id !== id);
-            saveDB(db);
-            renderAll();
-            showToast('Certificate deleted.', 'info');
-        }
-
-        function previewCertificate(id) {
-            const db = getDB();
-            const c = db.certificates.find(x => x.id === id);
-            if (!c) return;
-            const area = document.getElementById('certificatePreviewArea');
-            const student = db.students.find(s => s.id === c.studentId);
-            const photo = student ? student.photo : '';
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-
-            const photoHtml = photo ? `<img src="${photo}" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);" />` :
-                `<div style="width:70px;height:70px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto;">🎓</div>`;
-
-            area.innerHTML = `
-            <div class="certificate-preview" id="certificateForPDF">
-              <div style="border:2px solid var(--accent);border-radius:12px;padding:20px;">
-                <h2>🎓 Certificate</h2>
-                <div style="margin:12px 0;">${photoHtml}</div>
-                <div class="cert-body">
-                  <p>This is to certify that <strong>${c.name}</strong></p>
-                  <p>Student ID: <strong>${c.studentId}</strong> | Class: <strong>${c.class}</strong></p>
-                  <p>has successfully completed the <strong>${c.type}</strong></p>
-                  <p>issued on <strong>${formatDate(c.date)}</strong>.</p>
-                </div>
-                <div style="margin-top:20px;border-top:2px solid #ddd;padding-top:12px;display:flex;justify-content:space-between;font-size:0.9rem;">
-                  <span>✍️ Principal</span>
-                  <span>🏫 ${schoolName}</span>
-                </div>
-                <div class="d-flex gap-2 mt-3 flex-wrap justify-content-center">
-                  <button class="btn btn-sm btn-primary-custom" onclick="exportCertPDF('${c.id}')"><i class="bi bi-filetype-pdf"></i> PDF</button>
-                  <button class="btn btn-sm btn-success" onclick="shareCertWhatsApp('${c.id}')"><i class="bi bi-whatsapp"></i> WhatsApp</button>
-                  <button class="btn btn-sm btn-outline-custom" onclick="copyCertText('${c.id}')"><i class="bi bi-clipboard"></i> Copy</button>
-                </div>
-              </div>
-            </div>`;
-
-            document.querySelectorAll('#certificatesBody tr').forEach(tr => tr.classList.remove('vlookup-highlight'));
-            const row = document.querySelector(`#certificatesBody tr[data-cert-id="${id}"]`);
-            if (row) row.classList.add('vlookup-highlight');
-        }
-
-        function exportCertPDF(id) {
-            const db = getDB();
-            const c = db.certificates.find(x => x.id === id);
-            if (!c) return;
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(22);
-            doc.text('🎓 Certificate', 105, 25, { align: 'center' });
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(12);
-            doc.text(`This is to certify that`, 105, 45, { align: 'center' });
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(16);
-            doc.text(c.name, 105, 55, { align: 'center' });
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(12);
-            doc.text(`Student ID: ${c.studentId}  |  Class: ${c.class}`, 105, 67, { align: 'center' });
-            doc.text(`has successfully completed the ${c.type}`, 105, 79, { align: 'center' });
-            doc.text(`issued on ${formatDate(c.date)}`, 105, 91, { align: 'center' });
-            doc.setFont('helvetica', 'italic');
-            doc.text('✍️ Principal — ' + schoolName, 105, 120, { align: 'center' });
-            doc.save(`Certificate_${c.studentId}.pdf`);
-            showToast('Certificate PDF downloaded!', 'success');
-        }
-
-        function shareCertWhatsApp(id) {
-            const db = getDB();
-            const c = db.certificates.find(x => x.id === id);
-            if (!c) return;
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-            let msg = `🎓 *CERTIFICATE* 🎓\n`;
-            msg += `🏫 ${schoolName}\n`;
-            msg += `━━━━━━━━━━━━━━━━━\n`;
-            msg += `👤 Name: ${c.name}\n🆔 ID: ${c.studentId}\n📖 Class: ${c.class}\n📜 Type: ${c.type}\n📅 Date: ${formatDate(c.date)}\n`;
-            msg += `━━━━━━━━━━━━━━━━━\n✅ Certified ✅\n`;
-            const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-            showToast('WhatsApp opened!', 'info');
-        }
-
-        function copyCertText(id) {
-            const db = getDB();
-            const c = db.certificates.find(x => x.id === id);
-            if (!c) return;
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-            const txt =
-                `🎓 Certificate: ${c.name} (${c.studentId}) | Class: ${c.class} | Type: ${c.type} | Date: ${formatDate(c.date)} | ${schoolName}`;
-            navigator.clipboard.writeText(txt).then(() => showToast('Copied!', 'success')).catch(() => {});
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  VLOOKUP
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function vlookupStudent() {
-            const id = document.getElementById('vlookupId').value.trim().toLowerCase();
-            const name = document.getElementById('vlookupName').value.trim().toLowerCase();
-            const cls = document.getElementById('vlookupClass').value;
-            const stream = document.getElementById('vlookupStream').value;
-
-            const db = getDB();
-            let results = db.students;
-
-            if (id) results = results.filter(s => s.id.toLowerCase().includes(id));
-            if (name) results = results.filter(s => s.name.toLowerCase().includes(name));
-            if (cls) results = results.filter(s => s.class === cls);
-            if (stream) results = results.filter(s => s.stream === stream);
-
-            const area = document.getElementById('vlookupResult');
-            if (results.length === 0) {
-                area.innerHTML = `<div class="alert alert-warning">No matching records found.</div>`;
-                return;
-            }
-
-            let html =
-                `<div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Stream</th><th>Subjects</th><th>Father</th><th>Phone</th><th>Fee</th></tr></thead><tbody>`;
-            results.forEach(s => {
-                const subjects = getSubjectsForStream(s.stream || 'General');
-                const subStr = subjects.length ? subjects.join(', ') : '—';
-                html +=
-                    `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.class}</td><td>${streamBadge(s.stream)}</td><td style="font-size:0.8rem;">${subStr}</td><td>${s.father||'—'}</td><td>${s.phone||'—'}</td><td>${feeBadge(s.feeStatus)}</td></tr>`;
-            });
-            html += `</tbody></table></div>`;
-            area.innerHTML = html;
-            showToast(`Found ${results.length} record(s)`, 'info');
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  EXPORTS (Excel)
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function exportStudentsExcel() {
-            const db = getDB();
-            const data = db.students.map(s => {
-                const subjects = getSubjectsForStream(s.stream || 'General');
-                return { ID: s.id, Name: s.name, Class: s.class, Stream: s.stream || 'General', Section: s.section ||
-                        '', Subjects: subjects.join(', '), Father: s.father || '', Mother: s.mother || '',
-                    Phone: s.phone || '', Email: s.email || '', Address: s.address || '', 'Fee Status': s
-                        .feeStatus || 'Unpaid', 'Fee Amount (PKR)': s.feeAmount || 0, 'Enroll Date': s
-                        .enrollDate || '' };
-            });
-            downloadExcel(data, 'Students_Data_Pakistan');
-            showToast('Students Excel exported!', 'success');
-        }
-
-        function exportResultsExcel() {
-            const db = getDB();
-            const data = db.results.map(r => {
-                const subjects = r.subjects || {};
-                const { total, pct, grade } = calcResult(subjects);
-                const row = { 'Student ID': r.studentId, Name: r.name, Class: r.class, Stream: r.stream || 'General',
-                    Term: r.term || 'Final' };
-                Object.keys(subjects).forEach(sub => { row[sub] = subjects[sub]; });
-                row['Total'] = total;
-                row['Percentage'] = pct;
-                row['Grade'] = grade;
-                return row;
-            });
-            downloadExcel(data, 'Results_Data_Pakistan');
-            showToast('Results Excel exported!', 'success');
-        }
-
-        function exportFeesExcel() {
-            const db = getDB();
-            const data = db.fees.map(f => ({ 'Voucher #': f.id, 'Student ID': f.studentId, Name: f.name, Class: f
-                    .class || '', 'Amount (PKR)': f.amount, Status: f.status, Date: f.date || '', Method: f
-                    .method || '' }));
-            downloadExcel(data, 'Fees_Data_Pakistan');
-            showToast('Fees Excel exported!', 'success');
-        }
-
-        function exportAllExcel() {
-            exportStudentsExcel();
-            setTimeout(() => exportResultsExcel(), 300);
-            setTimeout(() => exportFeesExcel(), 600);
-            setTimeout(() => showToast('All data exported! Check downloads.', 'success'), 900);
-        }
-
-        function downloadExcel(data, filename) {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, 'Data');
-            XLSX.writeFile(wb, filename + '.xlsx');
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  COPY ALL TEXT
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function copyAllData() {
-            const db = getDB();
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-            let txt = `🏫 ${schoolName} - DATA EXPORT\n`;
-            txt += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-
-            txt += `📚 STUDENTS (${db.students.length})\n`;
-            db.students.forEach(s => {
-                const subjects = getSubjectsForStream(s.stream || 'General').join(', ');
-                txt +=
-                    `  ${s.id} | ${s.name} | Class ${s.class} | ${s.stream||'General'} | Subjects: ${subjects} | ${s.father} | ${s.phone} | Fee: ${s.feeStatus}\n`;
-            });
-
-            txt += `\n👨‍🏫 TEACHERS (${db.teachers.length})\n`;
-            db.teachers.forEach(t => { txt += `  ${t.id} | ${t.name} | ${t.subject} | Class ${t.class} | ${t.phone}\n`; });
-
-            txt += `\n📊 RESULTS (${db.results.length})\n`;
-            db.results.forEach(r => {
-                const subs = r.subjects || {};
-                const subStr = Object.keys(subs).map(k => `${k}:${subs[k]}`).join(' ');
-                txt +=
-                    `  ${r.studentId} | ${r.name} | Class ${r.class} | ${r.stream||'General'} | ${r.term} | ${subStr}\n`;
-            });
-
-            txt += `\n💰 FEES (PKR) (${db.fees.length})\n`;
-            db.fees.forEach(f => { txt +=
-                `  ${f.id} | ${f.studentId} | ${f.name} | PKR ${f.amount} | ${f.status} | ${f.date||''}\n`; });
-
-            txt += `\n🎓 CERTIFICATES (${db.certificates.length})\n`;
-            db.certificates.forEach(c => { txt += `  ${c.id} | ${c.studentId} | ${c.name} | ${c.type} | ${c.date||''}\n`; });
-
-            navigator.clipboard.writeText(txt).then(() => showToast('All data copied to clipboard!', 'success'))
-                .catch(() => {
-                    const ta = document.createElement('textarea');
-                    ta.value = txt;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    ta.remove();
-                    showToast('Copied!', 'success');
-                });
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  WHATSAPP SHARE (GENERAL)
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function shareWhatsApp() {
-            const type = document.getElementById('whatsappDataType').value;
-            const db = getDB();
-            const schoolName = db.schoolName || 'Pakistan Islamic School';
-            let msg = `🏫 *${schoolName}* 🏫\n`;
-
-            if (type === 'students' || type === 'all') {
-                msg += `\n📚 *STUDENTS* (${db.students.length})\n`;
-                db.students.slice(0, 10).forEach(s => { msg +=
-                    `• ${s.id} ${s.name} (${s.class}) ${s.stream||'General'} Fee:${s.feeStatus}\n`; });
-                if (db.students.length > 10) msg += `... and ${db.students.length-10} more\n`;
-            }
-            if (type === 'results' || type === 'all') {
-                msg += `\n📊 *RESULTS* (${db.results.length})\n`;
-                db.results.slice(0, 10).forEach(r => { msg +=
-                    `• ${r.name} (${r.class}) ${r.stream||'General'} ${r._pct||'?'}%\n`; });
-                if (db.results.length > 10) msg += `... and ${db.results.length-10} more\n`;
-            }
-            if (type === 'fees' || type === 'all') {
-                msg += `\n💰 *FEES (PKR)* (${db.fees.length})\n`;
-                db.fees.slice(0, 10).forEach(f => { msg += `• ${f.name} PKR ${f.amount} ${f.status}\n`; });
-                if (db.fees.length > 10) msg += `... and ${db.fees.length-10} more\n`;
-            }
-
-            const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-            showToast('WhatsApp shared!', 'info');
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  MODAL HELPERS
-        // ──────────────────────────────────────────────────────────────────────────
-
-        function openModal(id) {
-            const el = document.getElementById(id);
-            if (el) {
-                const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
-                modal.show();
-            }
-        }
-
-        // ──────────────────────────────────────────────────────────────────────────
-        //  INIT
-        // ──────────────────────────────────────────────────────────────────────────
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', { day: '2-digit',
-                month: 'short', year: 'numeric' });
-
-            const today = todayStr();
-            document.getElementById('sEnrollDate').value = today;
-            document.getElementById('fDate').value = today;
-            document.getElementById('cDate').value = today;
-
-            // Photo previews
-            document.getElementById('sPhoto').addEventListener('change', function(e) {
-                const f = e.target.files[0];
-                if (f) {
-                    const r = new FileReader();
-                    r.onload = (ev) => { document.getElementById('sPhotoPreview').innerHTML =
-                            `<img src="${ev.target.result}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;" />`; };
-                    r.readAsDataURL(f);
-                }
-            });
-            document.getElementById('tPhoto').addEventListener('change', function(e) {
-                const f = e.target.files[0];
-                if (f) {
-                    const r = new FileReader();
-                    r.onload = (ev) => { document.getElementById('tPhotoPreview').innerHTML =
-                            `<img src="${ev.target.result}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;" />`; };
-                    r.readAsDataURL(f);
-                }
-            });
-
-            // Save school name & prepared by on blur
-            document.getElementById('schoolNameDisplay').addEventListener('blur', saveSchoolName);
-            document.getElementById('preparedByName').addEventListener('blur', saveSchoolName);
-
-            renderAll();
-
-            // Load sample data if empty
-            const db = getDB();
-            if (db.students.length === 0) {
-                db.students.push({ id: 'STU001', name: 'Ali Hassan', class: '10', stream: 'Science', section: 'A',
-                    father: 'Muhammad Hassan', mother: 'Fatima Hassan', phone: '03001234567', email: 'ali@example.com',
-                    address: 'Lahore', enrollDate: '2024-04-01', feeStatus: 'Paid', feeAmount: 25000, photo: '' });
-                db.students.push({ id: 'STU002', name: 'Sana Iqbal', class: '9', stream: 'Arts', section: 'B',
-                    father: 'Iqbal Ahmed', mother: 'Saima Iqbal', phone: '03001234568', email: 'sana@example.com',
-                    address: 'Karachi', enrollDate: '2024-04-01', feeStatus: 'Paid', feeAmount: 20000, photo: '' });
-                db.students.push({ id: 'STU003', name: 'Usman Khan', class: '5', stream: 'General', section: 'A',
-                    father: 'Shahid Khan', mother: 'Nasreen Khan', phone: '03001234569', email: 'usman@example.com',
-                    address: 'Islamabad', enrollDate: '2024-04-01', feeStatus: 'Unpaid', feeAmount: 12000, photo: '' });
-                db.students.push({ id: 'STU004', name: 'Ayesha Malik', class: 'Prep', stream: 'General', section: '',
-                    father: 'Rashid Malik', mother: 'Zainab Malik', phone: '03001234570', email: '', address: 'Rawalpindi',
-                    enrollDate: '2024-04-01', feeStatus: 'Partial', feeAmount: 8000, photo: '' });
-                db.students.push({ id: 'STU005', name: 'Bilal Ahmed', class: '10', stream: 'Science', section: 'B',
-                    father: 'Farhan Ahmed', mother: 'Rubina Ahmed', phone: '03001234571', email: 'bilal@example.com',
-                    address: 'Faisalabad', enrollDate: '2024-04-01', feeStatus: 'Paid', feeAmount: 25000, photo: '' });
-
-                db.teachers.push({ id: 'TCH001', name: 'Ms. Ayesha Khan', subject: 'English', class: '10',
-                    phone: '03009876543', email: 'ayesha@school.com', photo: '' });
-                db.teachers.push({ id: 'TCH002', name: 'Mr. Imran Ali', subject: 'Physics', class: '9',
-                    phone: '03009876544', email: 'imran@school.com', photo: '' });
-
-                db.results.push({ id: 'RES001', studentId: 'STU001', name: 'Ali Hassan', class: '10', stream: 'Science',
-                    term: 'Term 1', subjects: { English: 85, Urdu: 78, Mathematics: 92, Physics: 88, Chemistry: 76,
-                        Biology: 95, 'Pakistan Studies': 82, Islamiyat: 90 } });
-                db.results.push({ id: 'RES002', studentId: 'STU002', name: 'Sana Iqbal', class: '9', stream: 'Arts',
-                    term: 'Term 1', subjects: { English: 72, Urdu: 68, Mathematics: 81, 'Pakistan Studies': 74,
-                        Islamiyat: 88, 'General Science': 70, Economics: 65, Geography: 78 } });
-                db.results.push({ id: 'RES003', studentId: 'STU003', name: 'Usman Khan', class: '5', stream: 'General',
-                    term: 'Final', subjects: { English: 60, Urdu: 55, Mathematics: 72, 'General Science': 65,
-                        'Social Studies': 58, Islamiyat: 70, Computer: 68, 'Art & Drawing': 80 } });
-                db.results.push({ id: 'RES004', studentId: 'STU004', name: 'Ayesha Malik', class: 'Prep',
-                    stream: 'General', term: 'Term 2', subjects: { English: 45, Urdu: 50, Mathematics: 60,
-                        'General Science': 55, 'Social Studies': 40, Islamiyat: 48, Computer: 52, 'Art & Drawing': 70 } });
-
-                db.fees.push({ id: 'FEE001', studentId: 'STU001', name: 'Ali Hassan', class: '10', amount: 25000,
-                    status: 'Paid', date: '2024-04-10', method: 'Bank Transfer' });
-                db.fees.push({ id: 'FEE002', studentId: 'STU002', name: 'Sana Iqbal', class: '9', amount: 20000,
-                    status: 'Paid', date: '2024-04-12', method: 'Cash' });
-                db.fees.push({ id: 'FEE003', studentId: 'STU003', name: 'Usman Khan', class: '5', amount: 12000,
-                    status: 'Unpaid', date: '2024-04-15', method: '' });
-                db.fees.push({ id: 'FEE004', studentId: 'STU004', name: 'Ayesha Malik', class: 'Prep', amount: 8000,
-                    status: 'Partial', date: '2024-04-18', method: 'Cash' });
-
-                db.certificates.push({ id: 'CERT001', studentId: 'STU001', name: 'Ali Hassan', class: '10',
-                    type: 'Bonafide Certificate', date: '2024-05-01' });
-                db.certificates.push({ id: 'CERT002', studentId: 'STU002', name: 'Sana Iqbal', class: '9',
-                    type: 'Character Certificate', date: '2024-05-02' });
-
-                db.counters = { student: 5, teacher: 2, result: 4, fee: 4, cert: 2 };
-                db.schoolName = 'Pakistan Islamic School';
-                db.preparedBy = 'Eng Ali Hasan';
-                saveDB(db);
-                renderAll();
-                showToast('✅ Sample data loaded (Pakistan curriculum)!', 'success');
-            }
-        });
-
-        document.querySelectorAll('.modal').forEach(mod => {
-            mod.addEventListener('hidden.bs.modal', function() {
-                const form = this.querySelector('form');
-                if (form) form.reset();
-                const previews = this.querySelectorAll('[id$=PhotoPreview], [id$=PhotoPreview]');
-                previews.forEach(el => el.innerHTML = '');
-                const editIds = this.querySelectorAll('[id$=EditId]');
-                editIds.forEach(el => el.value = '');
-            });
-        });
-
-        console.log('🏫 Pakistan School Management System loaded!');
-        console.log('📌 Subjects: English, Urdu, Mathematics, Science, Pakistan Studies, Islamiyat, etc.');
-        console.log('📌 Streams: General (Prep-8), Science (9-10), Arts (9-10)');
-        console.log('📌 Currency: PKR');
-        console.log('📌 Features: Editable school name, prepared by, class-wise subjects, dynamic results, PDF, Excel, WhatsApp');
+        function filterStudents() { }
+        function clearStudentFilters() { }
+        function filterResults() { }
+        function clearResultFilters() { }
+        function filterFees() { }
+        function clearFeeFilters() { }
+        function exportStudentsExcel() { alert('Export feature coming soon'); }
+        function exportResultsExcel() { alert('Export feature coming soon'); }
+        function exportFeesExcel() { alert('Export feature coming soon'); }
+        function exportAllExcel() { alert('Export feature coming soon'); }
+        function copyAllData() { alert('Copy feature coming soon'); }
+        function shareWhatsApp() { alert('WhatsApp feature coming soon'); }
+        function vlookupStudent() { alert('VLOOKUP feature coming soon'); }
+        function updateStreamOptions() { }
     </script>
 
 </body>
